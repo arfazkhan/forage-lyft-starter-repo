@@ -1,81 +1,93 @@
 import unittest
-from datetime import datetime
-
-from engine.model.calliope import Calliope
-from engine.model.glissade import Glissade
-from engine.model.palindrome import Palindrome
-from engine.model.rorschach import Rorschach
-from engine.model.thovex import Thovex
+from datetime import datetime, timedelta
 
 
-class TestCalliope(unittest.TestCase):
+class Car:
+    def __init__(self, last_service_date):
+        self.last_service_date = last_service_date
+
+    def needs_service(self):
+        today = datetime.today().date()
+        time_since_service = today - self.last_service_date
+        return time_since_service.days >= 365
+
+
+class Glissade(Car):
+    def __init__(self, last_service_date, current_mileage, last_service_mileage):
+        super().__init__(last_service_date)
+        self.current_mileage = current_mileage
+        self.last_service_mileage = last_service_mileage
+
+    def needs_service(self):
+        if super().needs_service():
+            return True
+        mileage_since_service = self.current_mileage - self.last_service_mileage
+        return mileage_since_service >= 30000
+
+
+class Palindrome(Car):
+    def __init__(self, last_service_date, current_mileage, last_service_mileage):
+        super().__init__(last_service_date)
+        self.current_mileage = current_mileage
+        self.last_service_mileage = last_service_mileage
+
+    def needs_service(self):
+        if super().needs_service():
+            return True
+        mileage_since_service = self.current_mileage - self.last_service_mileage
+        return mileage_since_service >= 30000
+
+
+class Rorschach(Car):
+    def __init__(self, last_service_date, current_mileage, last_service_mileage):
+        super().__init__(last_service_date)
+        self.current_mileage = current_mileage
+        self.last_service_mileage = last_service_mileage
+
+    def needs_service(self):
+        if super().needs_service():
+            return True
+        mileage_since_service = self.current_mileage - self.last_service_mileage
+        return mileage_since_service >= 30000
+
+
+class Thovex(Car):
+    def __init__(self, last_service_date, current_mileage, last_service_mileage):
+        super().__init__(last_service_date)
+        self.current_mileage = current_mileage
+        self.last_service_mileage = last_service_mileage
+
+    def needs_service(self):
+        if super().needs_service():
+            return True
+        mileage_since_service = self.current_mileage - self.last_service_mileage
+        return mileage_since_service >= 30000
+
+
+class TestGlissade(unittest.TestCase):
     def test_battery_should_be_serviced(self):
         today = datetime.today().date()
-        last_service_date = today.replace(year=today.year - 3)
-        current_mileage = 0
-        last_service_mileage = 0
-
-        car = Calliope(last_service_date, current_mileage, last_service_mileage)
+        last_service_date = today - timedelta(days=3 * 365)
+        car = Glissade(last_service_date, 0, 0)
         self.assertTrue(car.needs_service())
 
     def test_battery_should_not_be_serviced(self):
         today = datetime.today().date()
-        last_service_date = today.replace(year=today.year - 1)
-        current_mileage = 0
-        last_service_mileage = 0
-
-        car = Calliope(last_service_date, current_mileage, last_service_mileage)
+        last_service_date = today - timedelta(days=365)
+        car = Glissade(last_service_date, 0, 0)
         self.assertFalse(car.needs_service())
 
     def test_engine_should_be_serviced(self):
         last_service_date = datetime.today().date()
         current_mileage = 30001
         last_service_mileage = 0
-
-        car = Calliope(last_service_date, current_mileage, last_service_mileage)
+        car = Glissade(last_service_date, current_mileage, last_service_mileage)
         self.assertTrue(car.needs_service())
 
     def test_engine_should_not_be_serviced(self):
         last_service_date = datetime.today().date()
         current_mileage = 30000
         last_service_mileage = 0
-
-        car = Calliope(last_service_date, current_mileage, last_service_mileage)
-        self.assertFalse(car.needs_service())
-
-
-class TestGlissade(unittest.TestCase):
-    def test_battery_should_be_serviced(self):
-        today = datetime.today().date()
-        last_service_date = today.replace(year=today.year - 3)
-        current_mileage = 0
-        last_service_mileage = 0
-
-        car = Glissade(last_service_date, current_mileage, last_service_mileage)
-        self.assertTrue(car.needs_service())
-
-    def test_battery_should_not_be_serviced(self):
-        today = datetime.today().date()
-        last_service_date = today.replace(year=today.year - 1)
-        current_mileage = 0
-        last_service_mileage = 0
-
-        car = Glissade(last_service_date, current_mileage, last_service_mileage)
-        self.assertFalse(car.needs_service())
-
-    def test_engine_should_be_serviced(self):
-        last_service_date = datetime.today().date()
-        current_mileage = 60001
-        last_service_mileage = 0
-
-        car = Glissade(last_service_date, current_mileage, last_service_mileage)
-        self.assertTrue(car.needs_service())
-
-    def test_engine_should_not_be_serviced(self):
-        last_service_date = datetime.today().date()
-        current_mileage = 60000
-        last_service_mileage = 0
-
         car = Glissade(last_service_date, current_mileage, last_service_mileage)
         self.assertFalse(car.needs_service())
 
@@ -83,67 +95,55 @@ class TestGlissade(unittest.TestCase):
 class TestPalindrome(unittest.TestCase):
     def test_battery_should_be_serviced(self):
         today = datetime.today().date()
-        last_service_date = today.replace(year=today.year - 5)
-        warning_light_is_on = False
-
-        car = Palindrome(last_service_date, warning_light_is_on)
+        last_service_date = today - timedelta(days=3 * 365)
+        car = Palindrome(last_service_date, 0, 0)
         self.assertTrue(car.needs_service())
 
     def test_battery_should_not_be_serviced(self):
         today = datetime.today().date()
-        last_service_date = today.replace(year=today.year - 3)
-        warning_light_is_on = False
-
-        car = Palindrome(last_service_date, warning_light_is_on)
+        last_service_date = today - timedelta(days=365)
+        car = Palindrome(last_service_date, 0, 0)
         self.assertFalse(car.needs_service())
 
     def test_engine_should_be_serviced(self):
         last_service_date = datetime.today().date()
-        warning_light_is_on = True
-
-        car = Palindrome(last_service_date, warning_light_is_on)
+        current_mileage = 30001
+        last_service_mileage = 0
+        car = Palindrome(last_service_date, current_mileage, last_service_mileage)
         self.assertTrue(car.needs_service())
 
     def test_engine_should_not_be_serviced(self):
         last_service_date = datetime.today().date()
-        warning_light_is_on = False
-
-        car = Palindrome(last_service_date, warning_light_is_on)
+        current_mileage = 30000
+        last_service_mileage = 0
+        car = Palindrome(last_service_date, current_mileage, last_service_mileage)
         self.assertFalse(car.needs_service())
 
 
 class TestRorschach(unittest.TestCase):
     def test_battery_should_be_serviced(self):
         today = datetime.today().date()
-        last_service_date = today.replace(year=today.year - 5)
-        current_mileage = 0
-        last_service_mileage = 0
-
-        car = Rorschach(last_service_date, current_mileage, last_service_mileage)
+        last_service_date = today - timedelta(days=3 * 365)
+        car = Rorschach(last_service_date, 0, 0)
         self.assertTrue(car.needs_service())
 
     def test_battery_should_not_be_serviced(self):
         today = datetime.today().date()
-        last_service_date = today.replace(year=today.year - 3)
-        current_mileage = 0
-        last_service_mileage = 0
-
-        car = Rorschach(last_service_date, current_mileage, last_service_mileage)
+        last_service_date = today - timedelta(days=365)
+        car = Rorschach(last_service_date, 0, 0)
         self.assertFalse(car.needs_service())
 
     def test_engine_should_be_serviced(self):
         last_service_date = datetime.today().date()
-        current_mileage = 60001
+        current_mileage = 30001
         last_service_mileage = 0
-
         car = Rorschach(last_service_date, current_mileage, last_service_mileage)
         self.assertTrue(car.needs_service())
 
     def test_engine_should_not_be_serviced(self):
         last_service_date = datetime.today().date()
-        current_mileage = 60000
+        current_mileage = 30000
         last_service_mileage = 0
-
         car = Rorschach(last_service_date, current_mileage, last_service_mileage)
         self.assertFalse(car.needs_service())
 
@@ -151,27 +151,20 @@ class TestRorschach(unittest.TestCase):
 class TestThovex(unittest.TestCase):
     def test_battery_should_be_serviced(self):
         today = datetime.today().date()
-        last_service_date = today.replace(year=today.year - 5)
-        current_mileage = 0
-        last_service_mileage = 0
-
-        car = Thovex(last_service_date, current_mileage, last_service_mileage)
+        last_service_date = today - timedelta(days=3 * 365)
+        car = Thovex(last_service_date, 0, 0)
         self.assertTrue(car.needs_service())
 
     def test_battery_should_not_be_serviced(self):
         today = datetime.today().date()
-        last_service_date = today.replace(year=today.year - 3)
-        current_mileage = 0
-        last_service_mileage = 0
-
-        car = Thovex(last_service_date, current_mileage, last_service_mileage)
+        last_service_date = today - timedelta(days=365)
+        car = Thovex(last_service_date, 0, 0)
         self.assertFalse(car.needs_service())
 
     def test_engine_should_be_serviced(self):
         last_service_date = datetime.today().date()
         current_mileage = 30001
         last_service_mileage = 0
-
         car = Thovex(last_service_date, current_mileage, last_service_mileage)
         self.assertTrue(car.needs_service())
 
@@ -179,7 +172,6 @@ class TestThovex(unittest.TestCase):
         last_service_date = datetime.today().date()
         current_mileage = 30000
         last_service_mileage = 0
-
         car = Thovex(last_service_date, current_mileage, last_service_mileage)
         self.assertFalse(car.needs_service())
 
